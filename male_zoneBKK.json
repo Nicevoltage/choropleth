@@ -1,0 +1,77 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": 500,
+  "height": 300,
+  "title": "จำนวนผู้ชายแบ่งตามเขตปกครองกรุงเทพมหานคร",
+  "params": [{"name": "selectBKK", "select": "point"}],
+  "data": {
+    "url": "https://raw.githubusercontent.com/Nicevoltage/choropleth/main/bma_zone.json",
+    "format": {"type": "topojson", "feature": "bma_zone"}
+  },
+  "projection": {"type": "mercator"},
+  "mark": "geoshape",
+  "encoding": {
+    "color": {
+      "condition": {
+        "param": "selectBKK",
+        "field": "properties.no_male",
+        "type": "quantitative",
+        "title": "จำนวนเพศชาย"
+      },
+      "value": "grey"
+    },
+    "opacity": {"condition": {"param": "selectBKK", "value": 1}, "value": 0.2}
+  },
+  "config": {
+    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+    "width": 1000,
+    "height": 500,
+    "data": {
+      "url": "https://raw.githubusercontent.com/Maplub/AirQualityData/master/PM10_2018_daily.csv"
+    },
+    "transform": [
+      {"filter": "datum.pm10 < 200"},
+      {"filter": "substring(datum.id, 0,2) == 'CU'"}
+    ],
+    "encoding": {
+      "x": {"field": "time", "type": "temporal"},
+      "y": {"field": "pm10", "type": "quantitative"},
+      "color": {
+        "condition": {
+          "param": "hover",
+          "field": "id",
+          "type": "nominal",
+          "legend": null
+        },
+        "value": "grey"
+      },
+      "opacity": {"condition": {"param": "hover", "value": 1}, "value": 0.2}
+    },
+    "layer": [
+      {
+        "params": [
+          {
+            "name": "hover",
+            "value": [{"id": "CU-S0005"}],
+            "select": {"type": "point", "fields": ["id"], "on": "mouseover"}
+          }
+        ],
+        "mark": {"type": "line", "strokeWidth": 8, "stroke": "transparent"}
+      },
+      {"mark": "line"},
+      {
+        "encoding": {
+          "x": {"aggregate": "max", "field": "time"},
+          "y": {"aggregate": {"argmax": "time"}, "field": "pm10"}
+        },
+        "layer": [
+          {"mark": {"type": "circle"}},
+          {
+            "mark": {"type": "text", "align": "left", "dx": 4},
+            "encoding": {"text": {"field": "id", "type": "nominal"}}
+          }
+        ]
+      }
+    ]
+  }
+}
